@@ -1,0 +1,485 @@
+# ─────────────────────────────────────────────────────────────────────
+# Muninn scope.yaml — Grab Bug Bounty Program
+# ─────────────────────────────────────────────────────────────────────
+# Source: HackerOne Grab Program (captured 2026-11-07)
+# Authoritative scope page: https://hackerone.com/grab/policy_scopes
+#
+# Precedence (first match wins, top to bottom):
+#   1. excluded_assets   — in scope but zero bounty (e.g. *.qms.grab.com)
+#   2. out_of_scope      — not authorized to test at all
+#   3. in_scope          — most specific match wins (host > url > wildcard > domain)
+#   4. default           — DROP (unlisted = out of scope, per policy)
+# ─────────────────────────────────────────────────────────────────────
+
+program: "Grab"
+platform: hackerone
+handle: "grab"
+
+# ── Timeline (average, from program metrics) ─────────────────────────
+time_frames:
+  first_response: "1h"
+  triage: "4d 6h"
+  bounty: "2w 1d"
+  submission_to_bounty: "2w 5d"
+  resolution: "1m"          # estimated
+
+# ── Bounty tables (one per payout class) ─────────────────────────────
+# Source: Grab policy Rewards section + public bounty distribution data
+bounty_tables:
+  grab_web:
+    low:      [50, 500]
+    medium:   [500, 2000]
+    high:     [2000, 5000]
+    critical: [5000, 10000]
+  grab_mobile:
+    low:      [75, 750]
+    medium:   [750, 3000]
+    high:     [3000, 7500]
+    critical: [7500, 15000]
+
+# ── In scope ─────────────────────────────────────────────────────────
+# kind: url | host | domain | wildcard | wildcard_scheme | regex
+#   url             exact full URL (scheme + host + path)
+#   host            exact host only
+#   domain          example.com AND *.example.com
+#   wildcard        *.example.com (subdomains only, NOT apex)
+#   wildcard_scheme https://*.example.com (subdomains, scheme-locked)
+#   regex           explicit Python regex (escape hatch — use sparingly)
+#
+# max_severity: severity of any finding is CAPPED at this value on this asset
+# eligible:     false = in scope but zero bounty
+# bounty_table: which table above to score against
+in_scope:
+  # ── All Other Assets (Web / API) ──────────────────────────────────
+  - kind: wildcard
+    value: "*.grab.com"
+    asset_type: wildcard
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "Core Grab domain. Highest volume of resolved reports (315)."
+
+  - kind: wildcard
+    value: "*.grab.co"
+    asset_type: wildcard
+    max_severity: medium
+    bounty_table: grab_web
+    eligible: true
+    notes: "Max severity capped at Medium per program policy."
+
+  - kind: wildcard
+    value: "*.grabtaxi.com"
+    asset_type: wildcard
+    max_severity: medium
+    bounty_table: grab_web
+    eligible: true
+    notes: "Max severity capped at Medium. Exception: p.grabtaxi.com (below) is Critical."
+
+  - kind: host
+    value: "p.grabtaxi.com"
+    asset_type: api
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "API gateway proxy. Auth via X-mts-ssid header. Overrides the Medium cap on *.grabtaxi.com."
+
+  - kind: host
+    value: "xtramile.grabpay.com"
+    asset_type: domain
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: host
+    value: "manage.grab.co"
+    asset_type: domain
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: host
+    value: "gamma.grab.co"
+    asset_type: domain
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: host
+    value: "gifts.grab.com"
+    asset_type: domain
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: wildcard
+    value: "*.grabpay.com"
+    asset_type: wildcard
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: host
+    value: "api.grabpay.com"
+    asset_type: api
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "GrabPay API gateway. RESTful over HTTPS. Auth via X-mts-ssid."
+
+  - kind: wildcard
+    value: "*.grab-sure.com"
+    asset_type: wildcard
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: wildcard
+    value: "*.myteksi.com"
+    asset_type: wildcard
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "25 resolved reports."
+
+  - kind: wildcard
+    value: "*.myteksi.net"
+    asset_type: wildcard
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "116 resolved reports — high activity."
+
+  - kind: wildcard
+    value: "*.ovo.id"
+    asset_type: wildcard
+    max_severity: high
+    bounty_table: grab_web
+    eligible: true
+    notes: "Max severity capped at High. Staging/UAT subdomains are out of scope."
+
+  - kind: wildcard
+    value: "*.ovofinansial.com"
+    asset_type: wildcard
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "Formerly *.taralite.com."
+
+  - kind: host
+    value: "hungrygowhere.com"
+    asset_type: domain
+    max_severity: high
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: host
+    value: "kartaview.org"
+    asset_type: domain
+    max_severity: medium
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: host
+    value: "grab.careers"
+    asset_type: domain
+    max_severity: medium
+    bounty_table: grab_web
+    eligible: true
+
+  - kind: other
+    value: "Cloud & 3rd-Party Services (First-Party Misconfigurations)"
+    asset_type: cloud
+    max_severity: critical
+    bounty_table: grab_web
+    eligible: true
+    notes: "Strictly limited to security misconfigurations within Grab's direct administrative control."
+
+  # ── Mobile Assets (Android / iOS) ────────────────────────────────
+  - kind: android
+    value: "ovo.id"
+    asset_type: android
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "OVO Android app. Staging/UAT out of scope."
+
+  - kind: android
+    value: "com.moveit.app.customer"
+    asset_type: android
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+
+  - kind: android
+    value: "com.grabtaxi.passenger"
+    asset_type: android
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "Grab Android. Eligible for up to $15,000 critical."
+
+  - kind: android
+    value: "com.grabtaxi.driver2"
+    asset_type: android
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+
+  - kind: android
+    value: "com.grab.merchant"
+    asset_type: android
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+
+  - kind: android
+    value: "com.grabpay.merchant"
+    asset_type: android
+    max_severity: medium
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "Max severity capped at Medium."
+
+  - kind: other
+    value: "C103149579"
+    asset_type: huawei
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "Grab Driver for Huawei (HMS)."
+
+  - kind: other
+    value: "C100447517"
+    asset_type: huawei
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "Grab Superapp for Huawei (HMS)."
+
+  - kind: ios
+    value: "647268330"
+    asset_type: ios
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "Grab iOS. Eligible for up to $15,000 critical."
+
+  - kind: ios
+    value: "1481198245"
+    asset_type: ios
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "MoveIt iOS."
+
+  - kind: ios
+    value: "1257641454"
+    asset_type: ios
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "Grab Driver iOS."
+
+  - kind: ios
+    value: "1142114207"
+    asset_type: ios
+    max_severity: critical
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "OVO iOS app."
+
+  - kind: ios
+    value: "1343620481"
+    asset_type: ios
+    max_severity: medium
+    bounty_table: grab_mobile
+    eligible: true
+    notes: "GrabPay Merchant iOS. Max severity capped at Medium."
+
+# ── Out of scope (not authorized) ────────────────────────────────────
+out_of_scope:
+  # ── Staging / Development / UAT ──────────────────────────────────
+  - kind: wildcard
+    value: "*.byte-stack.net"
+    reason: "Staging/Development/UAT — explicitly out of scope."
+  - kind: wildcard
+    value: "*.dududev"
+    reason: "Staging/Development/UAT — explicitly out of scope."
+  - kind: wildcard
+    value: "*.uat-ovo.net"
+    reason: "Staging/Development/UAT — explicitly out of scope."
+  - kind: wildcard
+    value: "*.qms.grab.com"
+    reason: "Explicitly ineligible per program. Bounty: None."
+
+  # ── Policy-based exclusions (vulnerability classes) ──────────────
+  # These are enforced via core_ineligible below.
+
+# ── Excluded assets (in scope technically, but ineligible) ───────────
+# Different from out_of_scope: these are listed in the program, but have
+# bounty = None / Ineligible. Findings here are reported separately with $0.
+excluded_assets: []
+
+# ── Core ineligible findings (silently dropped, never reported) ──────
+# Source: Grab policy "Out-of-Scope Vulnerabilities" section (lines 113–145)
+core_ineligible:
+  # ── Information disclosure ──────────────────────────────────────
+  - descriptive-error-messages
+  - stack-traces
+  - third-party-api-keys-no-impact
+  - known-public-files
+  - robots-txt-disclosure
+  - private-ip-disclosure
+  - version-disclosure
+
+  # ── Low-impact / best-practice ──────────────────────────────────
+  - open-redirect-no-impact          # only report if chained with sensitive impact
+  - out-of-date-software-no-impact
+  - host-header-misconfiguration-no-impact
+  - broken-link-hijacking-no-impact
+  - clickjacking-no-poc
+  - tapjacking-no-poc
+  - csv-injection-no-impact
+  - mitm-required
+  - physical-access-required
+  - csrf-no-impact
+  - cookie-flags-non-sensitive
+  - http-options-method
+  - content-spoofing
+  - text-injection
+  - outdated-browser-only
+  - best-practice-no-exploit
+  - reverse-tabnabbing
+  - missing-security-headers
+  - missing-csp
+  - missing-hsts
+  - weak-tls-ssl
+  - mail-server-misconfiguration
+  - spf-dmarc-misconfiguration
+  - server-misconfiguration
+  - sandbox-uat-staging-vulns
+  - third-party-app-required
+  - phishing-prerequisite
+  - brute-force
+  - denial-of-service
+  - spamming
+  - insufficient-rate-limiting
+
+  # ── Mobile-specific ──────────────────────────────────────────────
+  - uri-leak-malicious-app
+  - absence-certificate-pinning
+  - sensitive-data-in-urls-under-tls
+  - unencrypted-external-storage
+  - lack-of-obfuscation
+  - malformed-intent-crashes
+
+# ── Mobile assets (informational — Burp can't test these directly) ──
+mobile_assets:
+  - platform: android
+    id: "ovo.id"
+    name: "OVO"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: android
+    id: "com.moveit.app.customer"
+    name: "MoveIt"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: android
+    id: "com.grabtaxi.passenger"
+    name: "Grab"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: android
+    id: "com.grabtaxi.driver2"
+    name: "Grab Driver"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: android
+    id: "com.grab.merchant"
+    name: "Grab Merchant"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: android
+    id: "com.grabpay.merchant"
+    name: "GrabPay Merchant"
+    max_severity: medium
+    bounty_table: grab_mobile
+  - platform: ios
+    id: "647268330"
+    name: "Grab"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: ios
+    id: "1481198245"
+    name: "MoveIt"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: ios
+    id: "1257641454"
+    name: "Grab Driver"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: ios
+    id: "1142114207"
+    name: "OVO"
+    max_severity: critical
+    bounty_table: grab_mobile
+  - platform: ios
+    id: "1343620481"
+    name: "GrabPay Merchant"
+    max_severity: medium
+    bounty_table: grab_mobile
+
+# ── Platform metrics (for expected-value reporting) ──────────────────
+platform_metrics:
+  web:
+    - band: low
+      range: [50, 500]
+      avg_bounty: 116
+      share_pct: 39.36
+    - band: medium
+      range: [500, 2000]
+      avg_bounty: 563
+      share_pct: 42.71
+    - band: high
+      range: [2000, 5000]
+      avg_bounty: 2046
+      share_pct: 13.07
+    - band: critical
+      range: [5000, 10000]
+      avg_bounty: null
+      share_pct: 4.86
+  mobile:
+    - band: low
+      range: [75, 750]
+      avg_bounty: 300
+      share_pct: 26.74
+    - band: medium
+      range: [750, 3000]
+      avg_bounty: 1216
+      share_pct: 56.98
+    - band: high
+      range: [3000, 7500]
+      avg_bounty: 3000
+      share_pct: 15.12
+    - band: critical
+      range: [7500, 15000]
+      avg_bounty: null
+      share_pct: 1.16
+
+# ── Rate limit (documented only — Muninn makes no requests) ──────────
+rate_limit:
+  max_rps: 10
+
+notes: |
+  Grab program-specific requirements:
+  - All traffic MUST include a custom header identifying you:
+      X-Bug-Bounty: HackerOne-<username>
+      X-Bug-Bounty: Timestamp-<DD-MM-YYYY HH:MM>
+  - Only test against accounts you own.
+  - Newly acquired sites: 16-month blackout period (critical/high only accepted).
+  - Recently disclosed 0-days: wait 2 months before reporting.
+  - Duplicates are closed without bounty.
+  - Final bounty decisions are at Grab's discretion.
+  - Maximum bonus of $2,000 for exceptional quality reports.
