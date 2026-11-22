@@ -1,8 +1,21 @@
+# Large generated CVE datasets
+/CVE_Lists/_index.json
+
+# Local wordlists
+/rockyou.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local state and secrets
 keys.txt
 .env
 .env.*
 !.env.example
-output/
-__pycache__/
-.pytest_cache/
-burp_history.xml
+
+# Generated scan results
+/output/
