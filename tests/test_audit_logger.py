@@ -94,4 +94,5 @@ class AuditLoggerTests(unittest.TestCase):
 
     def test_short_key_rejected(self):
         with self.assertRaises(AuditLogError):
+            AuditLogger(self.path, hmac_key=b"short")
 
